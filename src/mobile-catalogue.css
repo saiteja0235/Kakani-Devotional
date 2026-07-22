@@ -1,0 +1,18 @@
+main article,main .editorial-destination,main .contact-card,main .dark-card,main .light-card,main .mission-card,main .video-card,main .arch,main .commitment,main .cta,main .custom{animation:universalCardReveal linear both!important;animation-timeline:view()!important;animation-range:entry 0% cover 28%!important}
+@keyframes universalCardReveal{from{opacity:.12;filter:blur(5px) saturate(.65);clip-path:inset(4% 2% 4% 2% round 16px)}to{opacity:1;filter:blur(0) saturate(1);clip-path:inset(0 0 0 0 round 0)}}
+main img{animation:imageZoomReveal linear both!important;animation-timeline:view()!important;animation-range:entry 0% cover 34%!important}
+@media(max-width:1000px){
+  header{left:auto!important;right:max(8px,env(safe-area-inset-right))!important;transform:none!important;width:52px!important;min-width:52px!important;height:52px!important;top:max(8px,env(safe-area-inset-top))!important;padding:3px!important;border:0!important;background:transparent!important;backdrop-filter:none!important;box-shadow:none!important}
+  .kakani-logo{display:none!important}
+  header .menu{width:48px;height:48px;min-width:48px;min-height:48px;border:1px solid #c8a45d80!important;background:#111111e8!important;color:#e2bf77!important;box-shadow:0 12px 32px #0005!important;backdrop-filter:blur(14px)}
+  .mobile-menu{top:calc(max(8px,env(safe-area-inset-top)) + 60px)!important;right:max(8px,env(safe-area-inset-right))!important;left:auto!important;inset-inline:auto max(8px,env(safe-area-inset-right))!important;width:min(350px,calc(100vw - 16px))!important;max-height:calc(100dvh - 82px)!important;padding:10px!important;border-radius:10px!important;background:#100b08f4!important;overflow-y:auto!important;overscroll-behavior:contain}
+  .mobile-menu-head{height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 8px 0 12px;border-bottom:1px solid #ffffff18;color:#d8b66f;font:600 13px Cinzel}
+  .mobile-menu-head button{width:38px;height:38px;display:grid;place-items:center;border:0;background:transparent;color:#fff}
+  .mobile-nav-group>a,.mobile-nav-group>button{width:100%;min-height:46px;padding:0 12px!important;display:flex;align-items:center;justify-content:space-between;border:0;border-bottom:1px solid #ffffff12;background:transparent;color:#f3eadf;font-size:13px;font-weight:700;text-align:left}
+  .mobile-nav-group>button svg{transition:transform .3s}.mobile-nav-group>button.expanded{color:#d8b66f}.mobile-nav-group>button.expanded svg{transform:rotate(90deg)}
+  .mobile-catalogue{overflow:hidden;background:#ffffff05;border-left:1px solid #9e7534;margin-left:10px}
+  .mobile-catalogue>a{min-height:43px!important;padding:8px 12px!important;display:grid!important;grid-template-columns:1fr auto;align-items:center;border-bottom:1px solid #ffffff0d!important;color:#dfd3c6!important;font-size:12px!important}
+  .mobile-catalogue>a small{color:#a99580;font-size:9px;margin-left:10px}.mobile-catalogue .view-all-mobile{color:#d8b66f!important;display:flex!important;justify-content:space-between}.view-all-mobile svg{width:15px}
+}
+@media(max-width:390px){.mobile-menu{width:calc(100vw - 12px)!important;right:6px!important;inset-inline:auto 6px!important}}
+@media(prefers-reduced-motion:reduce){main article,main .editorial-destination,main .contact-card,main .dark-card,main .light-card,main .mission-card,main .video-card,main .arch,main .commitment,main .cta,main .custom,main img{animation:none!important;filter:none!important;clip-path:none!important}}

@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import './styles.css'
 import './enhancements.css'
+import './mobile-catalogue.css'
 
 const phone = '+91 97010 76666'
 const tel = 'tel:+919701076666'
@@ -114,9 +115,10 @@ function Logo() {
 function Header({ page }: { page: string }) {
   const [open, setOpen] = useState(false)
   const [mega, setMega] = useState<string | null>(null)
+  const [mobileSection, setMobileSection] = useState<string | null>(null)
   return <>
     <header><Logo /><nav onMouseLeave={()=>setMega(null)}>{nav.map(([label,key])=><div onMouseEnter={()=>setMega(key)} className={`nav-item ${page.split('/')[0]===key?'active':''} ${mega===key?'open':''}`} key={key}><a onClick={()=>setMega(null)} href={`#${key}`}>{label}</a>{key==='destinations'&&<div className="mega-menu destination-menu"><div><small>Explore by region</small><h3>Sacred destinations</h3><p>Find temple journeys across every part of India.</p><Button href="#destinations">View all destinations</Button></div><div className="mega-links">{destinationData.slice(0,10).map(d=><a onClick={()=>setMega(null)} href={`#destination/${slug(d.name)}`} key={d.name}><img src={d.image}/><span><b>{d.name}</b><small>{d.region}</small></span></a>)}</div></div>}{key==='tour-packages'&&<div className="mega-menu package-menu"><div><small>Pilgrimage catalogue</small><h3>Devotional packages</h3><p>Select a journey to view its complete itinerary and details.</p><Button href="#tour-packages">Browse full catalogue</Button></div><div className="package-name-list">{packages.map(p=><a onClick={()=>setMega(null)} href={`#package/${slug(p[0])}`} key={p[0]}><span>{p[0]}</span><ChevronRight/></a>)}</div></div>}</div>)}</nav><a className="call" href={tel}><Phone size={16} />{phone}</a><button className="menu" onClick={() => setOpen(!open)}>{open ? <X /> : <Menu />}</button></header>
-    {open && <div className="mobile-menu">{nav.map(([label, key]) => <a onClick={() => setOpen(false)} href={`#${key}`} key={key}>{label}<ChevronRight /></a>)}</div>}
+    {open && <motion.div className="mobile-menu" initial={{opacity:0,x:24,scale:.97}} animate={{opacity:1,x:0,scale:1}}><div className="mobile-menu-head"><span>Explore Kakani</span><button onClick={()=>setOpen(false)} aria-label="Close menu"><X/></button></div>{nav.map(([label,key])=><div className="mobile-nav-group" key={key}>{['destinations','tour-packages'].includes(key)?<><button className={mobileSection===key?'expanded':''} onClick={()=>setMobileSection(mobileSection===key?null:key)}><span>{label}</span><ChevronRight/></button><AnimatePresence>{mobileSection===key&&<motion.div className="mobile-catalogue" initial={{height:0,opacity:0}} animate={{height:'auto',opacity:1}} exit={{height:0,opacity:0}}>{key==='destinations'?destinationData.map(d=><a onClick={()=>setOpen(false)} href={`#destination/${slug(d.name)}`} key={d.name}>{d.name}<small>{d.region}</small></a>):packages.map(p=><a onClick={()=>setOpen(false)} href={`#package/${slug(p[0])}`} key={p[0]}>{p[0]}<small>{p[2]}</small></a>)}<a className="view-all-mobile" onClick={()=>setOpen(false)} href={`#${key}`}>View all {label}<ArrowRight/></a></motion.div>}</AnimatePresence></>:<a onClick={()=>setOpen(false)} href={`#${key}`}>{label}<ChevronRight/></a>}</div>)}</motion.div>}
   </>
 }
 function Loader() {
