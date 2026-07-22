@@ -16,3 +16,4 @@ main img{animation:imageZoomReveal linear both!important;animation-timeline:view
 }
 @media(max-width:390px){.mobile-menu{width:calc(100vw - 12px)!important;right:6px!important;inset-inline:auto 6px!important}}
 @media(prefers-reduced-motion:reduce){main article,main .editorial-destination,main .contact-card,main .dark-card,main .light-card,main .mission-card,main .video-card,main .arch,main .commitment,main .cta,main .custom,main img{animation:none!important;filter:none!important;clip-path:none!important}}
+.brand-social a{font:700 10px Inter,Arial,sans-serif;text-transform:lowercase;color:#d9c7b0}.brand-social a:hover{color:#e5bf73;border-color:#c8a45d;transform:translateY(-2px)}
