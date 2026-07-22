@@ -109,7 +109,7 @@ function usePage() {
 }
 
 function Logo() {
-  return <a className="logo kakani-logo" href="#home"><img src="/images/kakani-luxury-logo-gold.png" alt="Kakani Holidays Pvt. Ltd." /></a>
+  return <a className="logo kakani-logo" href="#home"><img src="/images/kakani-logo-transparent.png" alt="Kakani Holidays Pvt. Ltd." /></a>
 }
 function Header({ page }: { page: string }) {
   const [open, setOpen] = useState(false)
@@ -120,7 +120,7 @@ function Header({ page }: { page: string }) {
   </>
 }
 function Loader() {
-  return <div className="loader"><div className="lamp"><span /></div><img className="loader-logo" src="/images/kakani-luxury-logo-gold.png" alt="Kakani Holidays"/><small>Preparing your devotional journey</small></div>
+  return <div className="loader"><div className="lamp"><span /></div><img className="loader-logo" src="/images/kakani-logo-transparent.png" alt="Kakani Holidays"/><small>Preparing your devotional journey</small></div>
 }
 function PageHero({ page, title, gold, text, bg = img.water }: { page: string; title: string; gold?: string; text: string; bg?: string }) {
   const key=page==='Our Blog'?'blog':page.toLowerCase().replaceAll(' ','-'), visual=heroByPage[key]||bg
