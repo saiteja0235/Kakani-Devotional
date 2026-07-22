@@ -1,0 +1,219 @@
+import React, { useEffect, useState } from 'react'
+import { createRoot } from 'react-dom/client'
+import { AnimatePresence, motion, useInView } from 'framer-motion'
+import {
+  ArrowRight, Award, BadgeCheck, Bell, BookOpen, Bus, CalendarDays, CheckCircle2, ChevronRight,
+  Clock, Filter, Grid3X3, Headphones, HeartHandshake, Hotel, Image, List,
+  Mail, MapPin, Menu, MessageCircle, Phone, Play, Search, Send, ShieldCheck, Sparkles, Star,
+  Users, WalletCards, X
+} from 'lucide-react'
+import './styles.css'
+import './enhancements.css'
+
+const phone = '+91 97010 76666'
+const tel = 'tel:+919701076666'
+const wa = 'https://wa.me/919701076666'
+const email = 'kakaniholidays47@gmail.com'
+const youtube = 'https://www.youtube.com/@KakaniHolidays'
+const Landmark = Sparkles
+
+const nav = [
+  ['Home', 'home'], ['Destinations', 'destinations'], ['Tour Packages', 'tour-packages'],
+  ['Pilgrimage Guide', 'pilgrimage-guide'], ['Blog', 'blog'], ['About Us', 'about-us'], ['Contact Us', 'contact-us']
+]
+
+const img = {
+  hero: '/images/kakani-home-hero.png',
+  temple: '/images/hindu-temple-hero.png',
+  water: '/images/golden-temple-hero.png',
+  tirupati: '/images/tirupati.png',
+  shirdi: '/images/shirdi.png',
+  vaishno: '/images/vaishno-devi.png',
+  rameswaram: '/images/rameswaram.png',
+  dwarka: '/images/dwarka.png',
+  chardham: '/images/char-dham.png',
+  kashi: '/images/kashi-yatra.png',
+  south: '/images/south-india-temple.png',
+  somnath: '/images/dwarka-somnath.png'
+}
+
+const heroByPage: Record<string, string> = {
+  home: img.hero, destinations: img.dwarka, 'tour-packages': img.kashi,
+  'pilgrimage-guide': img.somnath, blog: img.water, 'about-us': img.temple,
+  'contact-us': img.tirupati
+}
+
+type Destination = { name:string; region:string; zone:string; image:string; gallery:string[]; intro:string; best:string; duration:string; places:string[]; itinerary:string[] }
+const destinationData: Destination[] = [
+  {name:'Tirupati Balaji',region:'Andhra Pradesh',zone:'South India',image:img.tirupati,gallery:[img.tirupati,img.south,img.rameswaram],intro:'Seek the blessings of Lord Venkateswara on the sacred Tirumala hills, with thoughtfully planned darshan and local temple visits.',best:'September to March',duration:'3 Days / 2 Nights',places:['Sri Venkateswara Temple','Sri Padmavathi Temple','Kapila Theertham','Srikalahasti'],itinerary:['Arrival in Tirupati and Padmavathi darshan','Tirumala darshan and sacred hill circuit','Srikalahasti visit and departure']},
+  {name:'Shirdi Sai Baba',region:'Maharashtra',zone:'West India',image:img.shirdi,gallery:[img.shirdi,img.kashi,img.water],intro:'A peaceful pilgrimage to Sai Baba Samadhi Mandir with time for aarti, Dwarkamai and nearby sacred places.',best:'October to February',duration:'3 Days / 2 Nights',places:['Samadhi Mandir','Dwarkamai','Chavadi','Shani Shingnapur'],itinerary:['Arrival and evening aarti','Samadhi Mandir, Dwarkamai and Chavadi','Shani Shingnapur visit and departure']},
+  {name:'Vaishno Devi',region:'Jammu & Kashmir',zone:'North India',image:img.vaishno,gallery:[img.vaishno,img.chardham,img.south],intro:'Walk the revered Trikuta mountain route to Mata Vaishno Devi Bhawan with dependable assistance throughout the yatra.',best:'March to June, September to November',duration:'4 Days / 3 Nights',places:['Banganga','Ardhkuwari','Mata Vaishno Devi Bhawan','Bhairavnath Temple'],itinerary:['Jammu arrival and transfer to Katra','Banganga to Bhawan pilgrimage','Bhairavnath darshan and return','Jammu departure']},
+  {name:'Rameswaram',region:'Tamil Nadu',zone:'South India',image:img.rameswaram,gallery:[img.rameswaram,img.south,img.tirupati],intro:'Experience one of the Char Dhams at Ramanathaswamy Temple and the sacred shores connecting devotion, history and the sea.',best:'October to April',duration:'4 Days / 3 Nights',places:['Ramanathaswamy Temple','Agni Theertham','Dhanushkodi','Pamban Bridge'],itinerary:['Madurai arrival and Rameswaram transfer','Temple darshan and 22 theerthams','Dhanushkodi and Pamban exploration','Madurai departure']},
+  {name:'Dwarka',region:'Gujarat',zone:'West India',image:img.dwarka,gallery:[img.dwarka,img.somnath,img.water],intro:'Follow the Krishna trail through ancient Dwarka, Bet Dwarka and the western coast’s deeply revered temples.',best:'October to March',duration:'5 Days / 4 Nights',places:['Dwarkadhish Temple','Bet Dwarka','Nageshwar Jyotirlinga','Rukmini Temple'],itinerary:['Rajkot arrival and Dwarka transfer','Dwarkadhish and Gomti Ghat','Bet Dwarka and Nageshwar','Somnath excursion','Departure']},
+  {name:'Kedarnath',region:'Uttarakhand',zone:'North India',image:img.chardham,gallery:[img.chardham,img.vaishno,img.south],intro:'A Himalayan Jyotirlinga yatra planned around acclimatization, route support and the profound serenity of Kedarnath.',best:'May to June, September to October',duration:'6 Days / 5 Nights',places:['Kedarnath Temple','Gaurikund','Guptkashi','Triyuginarayan'],itinerary:['Haridwar to Guptkashi','Gaurikund transfer and trek','Kedarnath darshan','Return to Guptkashi','Rishikesh visit','Departure']},
+  {name:'Kashi Vishwanath',region:'Uttar Pradesh',zone:'North India',image:img.kashi,gallery:[img.kashi,img.water,img.temple],intro:'Discover timeless Kashi through Jyotirlinga darshan, Ganga aarti, ancient ghats and nearby spiritual centres.',best:'October to March',duration:'4 Days / 3 Nights',places:['Kashi Vishwanath Temple','Dashashwamedh Ghat','Sarnath','Annapurna Temple'],itinerary:['Varanasi arrival and Ganga aarti','Kashi Vishwanath darshan and ghats','Sarnath and local temples','Departure']},
+  {name:'Badrinath',region:'Uttarakhand',zone:'North India',image:img.south,gallery:[img.south,img.chardham,img.vaishno],intro:'A sacred journey to Lord Badri Vishal amid the Garhwal Himalayas, with visits to Mana and holy Alaknanda sites.',best:'May to June, September to October',duration:'5 Days / 4 Nights',places:['Badrinath Temple','Mana Village','Tapt Kund','Vasudhara Falls'],itinerary:['Haridwar to Joshimath','Badrinath transfer and evening darshan','Temple darshan and Mana village','Rudraprayag stay','Haridwar departure']},
+  {name:'Jagannath Puri',region:'Odisha',zone:'East India',image:img.somnath,gallery:[img.somnath,img.rameswaram,img.tirupati],intro:'Receive Mahaprabhu Jagannath’s blessings and explore Odisha’s sacred coastal triangle of Puri, Konark and Bhubaneswar.',best:'October to February',duration:'4 Days / 3 Nights',places:['Jagannath Temple','Konark Sun Temple','Chilika Lake','Lingaraj Temple'],itinerary:['Bhubaneswar arrival and temple circuit','Puri Jagannath darshan','Konark and Chandrabhaga','Departure']},
+  {name:'Ayodhya',region:'Uttar Pradesh',zone:'North India',image:img.temple,gallery:[img.temple,img.kashi,img.tirupati],intro:'Visit Shri Ram Janmabhoomi and the ghats of the Sarayu in the city revered as the birthplace of Lord Rama.',best:'October to March',duration:'3 Days / 2 Nights',places:['Shri Ram Janmabhoomi','Hanuman Garhi','Kanak Bhawan','Sarayu Ghat'],itinerary:['Arrival and Sarayu aarti','Ram Mandir, Hanuman Garhi and Kanak Bhawan','Local sacred circuit and departure']}
+]
+
+const destinations = destinationData.map(d => [d.name, d.region, d.image])
+
+const packages = [
+  ['Char Dham Yatra', 'Yamunotri - Gangotri - Kedarnath - Badrinath', '12 Days / 11 Nights', '28,999', img.chardham],
+  ['Kashi Vishwanath Yatra', 'Varanasi - Prayagraj - Ayodhya - Gaya', '10 Days / 9 Nights', '16,999', img.kashi],
+  ['Tirupati Balaji Package', 'Tirupati - Srikalahasti - Kanchipuram', '10 Days / 8 Nights', '15,999', img.tirupati],
+  ['Dwarka Somnath Yatra', 'Dwarka - Somnath - Porbandar - Rajkot', '7 Days / 6 Nights', '12,999', img.somnath],
+  ['Kedarnath Yatra', 'Kedarnath - Guptkashi - Haridwar - Rishikesh', '8 Days / 7 Nights', '18,999', img.chardham],
+  ['Shirdi Nashik Package', 'Shirdi - Nashik - Trimbakeshwar', '6 Days / 5 Nights', '11,999', img.shirdi],
+  ['South India Temple Tour', 'Rameswaram - Madurai - Trichy - Thanjavur', '11 Days / 10 Nights', '20,999', img.rameswaram],
+  ['Jagannath Puri Yatra', 'Puri - Konark - Bhubaneswar', '5 Days / 4 Nights', '10,999', img.somnath],
+  ['Do Dham Yatra', 'Haridwar - Rishikesh - Kedarnath - Badrinath', '7 Days / 6 Nights', '24,999', img.chardham],
+  ['Pancha Dwarka Tour', 'Dwarka - Bet Dwarka - Dakor - Nathdwara - Kankroli', '9 Days / 8 Nights', '23,999', img.dwarka],
+  ['Nau Devi Darshan', 'Vaishno Devi - Kangra - Chamunda - Jwala Ji - Naina Devi', '7 Days / 6 Nights', '21,999', img.vaishno],
+  ['Ashtavinayak Yatra', 'Pune - Morgaon - Siddhatek - Pali - Mahad - Ranjangaon', '3 Days / 2 Nights', '9,999', img.shirdi],
+  ['Jyotirlinga Pilgrimage', 'Bhimashankar - Trimbakeshwar - Grishneshwar - Omkareshwar - Mahakaleshwar', '7 Days / 6 Nights', '22,999', img.kashi],
+  ['Varanasi Prayagraj Ayodhya', 'Varanasi - Sarnath - Prayagraj - Ayodhya', '5 Days / 4 Nights', '14,999', img.kashi],
+  ['Madurai Rameswaram Kanyakumari', 'Madurai - Rameswaram - Kanyakumari', '5 Days / 4 Nights', '16,999', img.rameswaram],
+  ['Panchabhoota Lingas Tour', 'Kanchipuram - Tiruvannamalai - Srikalahasti - Chidambaram - Thiruvanaikaval', '6 Days / 5 Nights', '18,999', img.south],
+  ['Mantralayam Ahobilam Srisailam', 'Mantralayam - Ahobilam - Srisailam', '4 Days / 3 Nights', '12,999', img.tirupati],
+  ['Shirdi Ajanta Ellora', 'Shirdi - Aurangabad - Ajanta - Ellora - Grishneshwar', '5 Days / 4 Nights', '15,999', img.shirdi]
+]
+
+const posts = [
+  ['Best Time to Visit Kedarnath in 2024', 'Travel Guide', '20 May', img.chardham],
+  ['The Spiritual Significance of Kashi Vishwanath Temple', 'Temple Story', '18 May', img.kashi],
+  ['Tirupati Balaji Darshan Guide 2024', 'Travel Guide', '15 May', img.tirupati],
+  ['Char Dham Yatra Preparation Checklist', 'Yatra Tips', '12 May', img.somnath],
+  ['The Power of Rudraksha and Its Benefits', 'Spiritual Insights', '10 May', img.shirdi],
+  ['Ganga Dussehra 2024: Date, Significance & Rituals', 'Festival', '08 May', img.water],
+  ['Vaishno Devi Temple: Story & Travel Guide', 'Temple Story', '05 May', img.vaishno],
+  ['Dwarka Somnath Tour Guide & Itinerary', 'Travel Guide', '05 May', img.dwarka]
+]
+
+const stats = [['10+', 'Years of Experience', Award], ['50K+', 'Happy Yatris', Users], ['200+', 'Destinations', MapPin], ['100+', 'Tour Packages', WalletCards], ['24/7', 'Customer Support', Headphones], ['4.8/5', 'Traveller Rating', Star]]
+const trust = [['All India Coverage', '200+ Destinations', MapPin], ['Handpicked Places', 'Spiritually Verified', Award], ['Expert Guidance', '24/7 Travel Support', Headphones], ['Safe & Comfortable', 'Trusted by Thousands', ShieldCheck], ['Divine Experiences', 'Beyond Expectations', Sparkles]]
+const features = [['Expert Guidance', 'Experienced team with spiritual knowledge', Users], ['Handpicked Hotels', 'Comfortable stays near sacred destinations', Hotel], ['Hassle-free Travel', 'Well-planned itineraries and smooth operations', CheckCircle2], ['Personalized Service', 'Customized packages for every devotee', HeartHandshake], ['Transparent Pricing', 'No hidden charges, complete clarity', WalletCards], ['24/7 Assistance', 'We are with you at every step', Headphones]]
+
+function usePage() {
+  const [page, setPage] = useState(location.hash.replace('#', '') || 'home')
+  useEffect(() => {
+    const onHash = () => {
+      setPage(location.hash.replace('#', '') || 'home')
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+    addEventListener('hashchange', onHash)
+    return () => removeEventListener('hashchange', onHash)
+  }, [])
+  return page
+}
+
+function Logo() {
+  return <a className="logo kakani-logo" href="#home"><img src="/images/kakani-logo-transparent.png" alt="Kakani Holidays Pvt. Ltd." /></a>
+}
+function Header({ page }: { page: string }) {
+  const [open, setOpen] = useState(false)
+  const [mega, setMega] = useState<string | null>(null)
+  return <>
+    <header><Logo /><nav onMouseLeave={()=>setMega(null)}>{nav.map(([label,key])=><div onMouseEnter={()=>setMega(key)} className={`nav-item ${page.split('/')[0]===key?'active':''} ${mega===key?'open':''}`} key={key}><a onClick={()=>setMega(null)} href={`#${key}`}>{label}</a>{key==='destinations'&&<div className="mega-menu destination-menu"><div><small>Explore by region</small><h3>Sacred destinations</h3><p>Find temple journeys across every part of India.</p><Button href="#destinations">View all destinations</Button></div><div className="mega-links">{destinationData.slice(0,10).map(d=><a onClick={()=>setMega(null)} href={`#destination/${slug(d.name)}`} key={d.name}><img src={d.image}/><span><b>{d.name}</b><small>{d.region}</small></span></a>)}</div></div>}{key==='tour-packages'&&<div className="mega-menu package-menu"><div><small>Pilgrimage catalogue</small><h3>Devotional packages</h3><p>Select a journey to view its complete itinerary and details.</p><Button href="#tour-packages">Browse full catalogue</Button></div><div className="package-name-list">{packages.map(p=><a onClick={()=>setMega(null)} href={`#package/${slug(p[0])}`} key={p[0]}><span>{p[0]}</span><ChevronRight/></a>)}</div></div>}</div>)}</nav><a className="call" href={tel}><Phone size={16} />{phone}</a><button className="menu" onClick={() => setOpen(!open)}>{open ? <X /> : <Menu />}</button></header>
+    {open && <div className="mobile-menu">{nav.map(([label, key]) => <a onClick={() => setOpen(false)} href={`#${key}`} key={key}>{label}<ChevronRight /></a>)}</div>}
+  </>
+}
+function Loader() {
+  return <div className="loader"><div className="lamp"><span /></div><img className="loader-logo" src="/images/kakani-logo-transparent.png" alt="Kakani Holidays"/><small>Preparing your devotional journey</small></div>
+}
+function PageHero({ page, title, gold, text, bg = img.water }: { page: string; title: string; gold?: string; text: string; bg?: string }) {
+  const key=page==='Our Blog'?'blog':page.toLowerCase().replaceAll(' ','-'), visual=heroByPage[key]||bg
+  return <section className="page-hero" style={{ '--bg': `url(${visual})` } as React.CSSProperties}><div className="wrap hero-inner"><p className="crumb">Home <ChevronRight size={14} /> {page}</p><motion.h1 initial={{ opacity: 0, y: 26, rotateX: 8 }} animate={{ opacity: 1, y: 0, rotateX: 0 }} transition={{duration:.75}}>{title} {gold && <em>{gold}</em>}</motion.h1><motion.p initial={{opacity:0,y:14}} animate={{opacity:1,y:0}} transition={{delay:.25}}>{text}</motion.p><motion.span initial={{scaleX:0}} animate={{scaleX:1}} className="orn" /></div></section>
+}
+function HomeHero(){
+  const slides=[img.hero,img.kashi,img.rameswaram], [active,setActive]=useState(0)
+  useEffect(()=>{const timer=setInterval(()=>setActive(x=>(x+1)%slides.length),2000);return()=>clearInterval(timer)},[])
+  return <section className="page-hero home-slider"><div className="home-slides">{slides.map((src,i)=><div className={i===active?'active':''} style={{backgroundImage:`url(${src})`}} key={src}/>)}</div><div className="wrap hero-inner"><p className="crumb">Home <ChevronRight size={14}/> Divine Journeys</p><motion.h1 initial={{opacity:0,y:26}} animate={{opacity:1,y:0}}>Sacred Journeys. <em>Divine Experiences.</em></motion.h1><p>Premium pilgrimage journeys across India with comfort, care and devotion.</p><span className="orn"/><div className="slide-dots">{slides.map((_,i)=><button className={i===active?'active':''} onClick={()=>setActive(i)} aria-label={`Show slide ${i+1}`} key={i}/>)}</div></div></section>
+}
+function TrustStrip() {
+  return <section className="wrap trust-strip">{trust.map(([a, b, Icon]: any) => <div className="mini lift" key={a}><Icon /><span><b>{a}</b><small>{b}</small></span></div>)}</section>
+}
+function SectionTitle({ over, title }: { over?: string; title: string }) {
+  return <div className="title">{over && <p>{over}</p>}<h2>{title}</h2><span /></div>
+}
+function Footer() {
+  return <footer><div className="wrap foot-grid"><div><Logo /><p>Your trusted companion for devotional journeys across India. We create memorable spiritual experiences with comfort, care and devotion.</p><div className="social"><a>f</a><a><Image size={15} /></a><a>▶</a><a><MessageCircle size={15} /></a></div></div><Foot title="Quick Links" items={['Home', 'About Us', 'Destinations', 'Tour Packages', 'Pilgrimage Guide', 'Blog', 'Contact Us']} /><Foot title="Popular Destinations" items={destinations.slice(0, 8).map(d => d[0])} /><Foot title="Top Packages" items={packages.slice(0, 7).map(p => p[0])} /><div><b>Newsletter</b><p>Subscribe to get updates on our latest packages and offers.</p><div className="subscribe"><input placeholder="Enter your email" /><button><ArrowRight size={18} /></button></div><div className="badges"><span>IATO</span><span>Incredible India</span><span>ATAI</span></div></div></div><div className="wrap copy">© 2024 Kakatiya Travels. All Rights Reserved.<span>Privacy Policy | Terms & Conditions | Cancellation Policy</span></div></footer>
+}
+function Foot({ title, items }: { title: string; items: string[] }) { return <div><b>{title}</b>{items.map(x => <a href="#" key={x}>{x}</a>)}</div> }
+function Button({ children, href = '#contact-us', outline = false }: { children: React.ReactNode; href?: string; outline?: boolean }) { return <a className={`btn ${outline ? 'outline' : ''}`} href={href}>{children}<ArrowRight size={16} /></a> }
+
+function Home() {
+  return <><HomeHero /><DestinationsPreview /><WhyBand /><Cta /></>
+}
+function About() {
+  return <><PageHero page="About Us" title="About Us" text="Our Journey. Our Purpose. Your Trust." bg={img.temple} /><section className="wrap story split"><div className="video-card tilt"><img src={img.chardham} /><button>▶</button></div><div><SectionTitle over="Our Story" title="A Tradition of Devotion and Excellence" /><p>Kakatiya Travels is dedicated to creating meaningful pilgrimage journeys that connect devotees with the divine across India. Every journey is planned with care, comfort and trust.</p><p>From ancient temples to sacred rivers, we handle the details so you can focus on your connection with the divine.</p><div className="icon-row">{features.slice(0,4).map(([a,,Icon]: any)=><span key={a}><Icon />{a}</span>)}</div></div></section><Stats /><section className="mission wrap"><Card title="Our Mission" text="To provide seamless, comfortable and spiritually enriching journeys that inspire devotion and create lifelong memories." /><div className="arch"><img src={img.temple} /></div><Card title="Our Vision" text="To be India's most trusted and preferred devotional travel partner, known for excellence, integrity and heartfelt service." /></section><section className="wrap"><SectionTitle over="Why Choose Kakatiya Travels" title="Travel with Confidence, Devotion and Care" /><FeatureGrid /><div className="leadership"><Team /><Commitment /></div></section></>
+}
+function DestinationsPage() {
+  const [zone,setZone]=useState('All Destinations'), [query,setQuery]=useState('')
+  const filtered=destinationData.filter(d=>(zone==='All Destinations'||d.zone===zone)&&`${d.name} ${d.region}`.toLowerCase().includes(query.toLowerCase()))
+  return <><PageHero page="Destinations" title="Explore Sacred" gold="Destinations" text="Discover revered pilgrimage places, temple traditions and thoughtfully planned sacred journeys across India." bg={heroByPage.destinations} /><TrustStrip /><section className="wrap toolbar"><div>{['All Destinations','North India','South India','East India','West India','Central India'].map(x=><button onClick={()=>setZone(x)} className={zone===x?'selected':''} key={x}>{x}</button>)}</div><label><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search destination..." /><Search /></label><button><Filter size={16}/> {filtered.length} Places</button></section><section className="wrap"><div className="view-row"><h2>{zone==='All Destinations'?'Popular Destinations':zone}</h2><span>{filtered.length} devotional destinations <Grid3X3 /></span></div><DestinationGrid items={filtered}/>{!filtered.length&&<div className="empty">No destinations match this filter.</div>}</section><WhyBand /><Cta /></>
+}
+function PackagesPage() {
+  const [place,setPlace]=useState('All Places')
+  const visible=packages.filter(p=>place==='All Places'||p[1].includes(place)||p[0].includes(place))
+  return <><PageHero page="Tour Packages" title="Curated Pilgrimage" gold="Tour Packages" text="Carefully designed pilgrimage tours to India's most sacred destinations." bg={img.water} /><TrustStrip /><section className="wrap filters"><label>Destination<select value={place} onChange={e=>setPlace(e.target.value)}><option>All Places</option>{Array.from(new Set(destinationData.flatMap(d=>[d.name.split(' ')[0],...d.places.slice(0,1)]))).map(x=><option key={x}>{x}</option>)}</select></label>{['Duration','Price Range','Travel Month','Group Size'].map(x=><label key={x}>{x}<select><option>Any {x.replace('Price Range','Budget')}</option></select></label>)}<button>Search Packages <Search size={16}/></button></section><section className="wrap package-grid">{visible.map(p=><PackageCard key={p[0]} p={p}/>)}</section>{!visible.length&&<div className="wrap empty">No package currently matches this place. Contact us for a customized itinerary.</div>}<WhyPackages /><CustomTour /><Footer /></>
+}
+function GuidePage() {
+  return <><PageHero page="Pilgrimage Guide" title="Your Complete" gold="Pilgrimage Guide" text="Everything you need to plan a safe, comfortable and spiritually enriching journey." bg={img.water} /><TrustStrip /><section className="wrap guide-layout"><main><div className="searchbar"><input placeholder="Search for temples, destinations, rituals..." /><button><Search /></button></div><SectionTitle title="Explore by Categories" /><div className="category-row">{['Yatra Guides','Rituals & Pujas','Temple Information','Travel Tips','Festivals & Events','Do’s & Don’ts'].map((x,i)=><article className="category lift" key={x}><img src={[img.chardham,img.water,img.temple,img.south,img.shirdi,img.dwarka][i]} /><Landmark /><b>{x}</b><small>Helpful information for every devotee</small></article>)}</div><SectionTitle title="Popular Pilgrimage Guides" /><BlogGrid small /><SectionTitle title="Essential Information for Every Devotee" /><FeatureGrid compact /><SectionTitle title="Latest from Our Pilgrimage Blog" /><BlogGrid small /></main><Aside /></section><Footer /></>
+}
+function BlogPage() {
+  return <><PageHero page="Our Blog" title="Inspiring Stories," gold="Sacred Journeys" text="Travel guides, spiritual insights, temple stories and expert tips." bg={img.water} /><section className="wrap blog-tabs">{['Travel Guides','Temple Stories','Spiritual Insights','Yatra Preparation','Festivals','Devotee Experiences'].map(x=><span key={x}><BookOpen />{x}</span>)}</section><section className="wrap blog-layout"><main><div className="view-row"><SectionTitle title="Latest Blog Posts" /><label><input placeholder="Search blogs..." /><Search /></label></div><BlogGrid /></main><Aside blog /></section><WhyBlog /><Footer /></>
+}
+function ContactPage() {
+  return <><PageHero page="Contact Us" title="We Are Here" gold="To Help You" text="Our travel experts are ready to assist with personalized guidance." bg={img.temple} /><TrustStrip /><section className="wrap contact-grid"><form className="contact-form"><SectionTitle title="Send Us a Message" /><input placeholder="Your Name *" /><input placeholder="Mobile Number *" /><input placeholder="Email Address *" /><select><option>Select Subject</option></select><select><option>Select Destination</option></select><textarea placeholder="How can we help you?" /><button className="btn">Send Message <Send size={16}/></button></form><div><SectionTitle title="Get in Touch" />{[['Call Us', phone, Phone], ['WhatsApp Us', phone, MessageCircle], ['Email Us', email, Mail], ['Office Address', 'Kakatiya Travels, Hyderabad, Telangana', MapPin]].map(([a,b,Icon]: any)=><div className="contact-card lift" key={a}><Icon /><span><b>{a}</b><small>{b}</small></span></div>)}</div><div className="prayer-card"><img src={img.shirdi}/><h2>Every Journey Matters to Us</h2><p>We are committed to making your pilgrimage comfortable, safe and spiritually enriching.</p></div></section><section className="wrap offices"><SectionTitle title="Our Offices" /><div>{['Head Office - Hyderabad','Branch Office - Tirupati','Branch Office - Haridwar'].map((x,i)=><article className="office lift" key={x}><img src={[img.temple,img.tirupati,img.somnath][i]} /><b>{x}</b><p>Telangana / Andhra Pradesh / Uttarakhand</p><small>📞 {phone}</small></article>)}</div><div className="map">Kakatiya Travels<br/><small>Hyderabad</small></div></section><Cta /><Footer /></>
+}
+
+function DestinationsPreview() { return <section className="wrap section"><SectionTitle title="Popular Devotional Destinations" /><DestinationGrid items={destinationData.slice(0,5)} /></section> }
+function slug(s:string){return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'')}
+function DestinationGrid({items=destinationData}:{items?:Destination[]}) { return <motion.div layout className="dest-grid">{items.map(d=><motion.a layout href={`#destination/${slug(d.name)}`} className="dest-card tilt" key={d.name} whileHover={{y:-10,rotateX:3,rotateY:-3}}><img src={d.image}/><div><h3>{d.name}</h3><p>{d.region}</p><button aria-label={`Explore ${d.name}`}><ArrowRight size={16}/></button></div></motion.a>)}</motion.div> }
+function PackageCard({ p }: { p: string[] }) { return <motion.article className="pkg-card lift" whileHover={{y:-9}}><div><img src={p[4]} /><span>{p[2]}</span></div><h3>{p[0]}</h3><p>{p[1]}</p><small><Clock size={13}/> {p[2]} <Hotel size={13}/> Hotel <Bus size={13}/> Transport</small><footer><b>From ₹{p[3]} /-</b><a href={`#package/${slug(p[0])}`}>View Details</a></footer></motion.article> }
+function FeatureGrid({ compact=false }: { compact?: boolean }) { return <div className={compact?'feature-grid compact':'feature-grid'}>{features.map(([a,b,Icon]: any)=><article className="lift" key={a}><Icon/><b>{a}</b><p>{b}</p></article>)}</div> }
+function Counter({value}:{value:string}){const ref=React.useRef(null),seen=useInView(ref,{amount:.7});const [n,setN]=useState(0);const target=parseFloat(value.replace(/[^0-9.]/g,''));useEffect(()=>{if(!seen){setN(0);return}let start=performance.now(),id=0;const tick=(now:number)=>{const p=Math.min((now-start)/1300,1);setN(target*(1-Math.pow(1-p,3)));if(p<1)id=requestAnimationFrame(tick)};id=requestAnimationFrame(tick);return()=>cancelAnimationFrame(id)},[seen,target]);const shown=value.includes('.')?n.toFixed(1):Math.floor(n);return <b ref={ref}>{shown}{value.replace(/[0-9.]/g,'')}</b>}
+function Stats() { return <section className="statsbar">{stats.map(([n,l,Icon]: any)=><motion.div initial={{opacity:0,y:18}} whileInView={{opacity:1,y:0}} viewport={{amount:.7}} key={l}><Icon/><Counter value={n}/><small>{l}</small></motion.div>)}</section> }
+function Card({ title, text }: { title: string; text: string }) { return <article className="mission-card"><Sparkles/><h3>{title}</h3><p>{text}</p></article> }
+function Team() { return <div><SectionTitle over="Our Leadership Team" title="" /><div className="team">{['Ramesh Reddy','Suresh Varma','Anitha Sharma'].map((n,i)=><article className="lift" key={n}><img src={[img.shirdi,img.south,img.vaishno][i]}/><b>{n}</b><small>{['Founder & CEO','Director of Operations','Head - Customer Relations'][i]}</small><p>Dedicated to personalized support and memorable journeys.</p></article>)}</div></div> }
+function Commitment() { return <div><SectionTitle over="Our Commitment" title="" /><div className="commitment"><img src={img.water}/><p>Every journey we create is rooted in faith, guided by responsibility, and dedicated to your comfort and safety.<br/><em>- Kakatiya Travels -</em></p></div></div> }
+function WhyBand() { return <section className="whyband"><div className="wrap"><SectionTitle over="Why travel with us" title="Your Journey, Our Responsibility" /><div>{features.slice(0,4).map(([a,b,Icon]: any)=><article key={a}><Icon/><b>{a}</b><p>{b}</p></article>)}</div></div></section> }
+function WhyPackages() { return <section className="whyband"><div className="wrap whyline"><h2>Why Travel With Kakatiya Travels?</h2>{features.slice(0,5).map(([a,b,Icon]: any)=><article key={a}><Icon/><b>{a}</b><p>{b}</p></article>)}</div></section> }
+function CustomTour() { return <section className="custom wrap"><h2>Looking for a Custom Pilgrimage Tour?</h2><p>We create personalised tour packages as per your preferences, time and budget.</p><Button>Plan My Custom Tour</Button></section> }
+function Cta() { return <section className="cta wrap"><div><p>Not sure where to go?</p><h2>Let Our Experts Help You</h2><span>Share your preferences and we will help you choose the perfect destination.</span></div><Button href={tel}>Talk to Travel Expert</Button><Button href={wa} outline>WhatsApp Us</Button></section> }
+function BlogGrid({ small=false }: { small?: boolean }) { return <div className={small?'blog-grid small':'blog-grid'}>{posts.map(([title,cat,date,pic])=><article className="blog-card lift" key={title}><img src={pic}/><span>{cat}</span><div className="date">{date}</div><h3>{title}</h3><p>Helpful insights, route details and spiritual guidance for a meaningful journey.</p><a>Read More <ArrowRight size={13}/></a></article>)}</div> }
+function Aside({ blog=false }: { blog?: boolean }) { return <aside><div className="dark-card"><h3>{blog?'Popular Posts':'Sacred Journey Planner'}</h3>{(blog?posts.slice(0,5).map(p=>p[0]):['Best Time to Visit','Route & Itinerary','Temple Timings','Seva & Darshan Info','Accommodation Tips']).map(x=><p key={x}><BadgeCheck size={14}/>{x}</p>)}<Button>Plan My Journey</Button></div><div className="light-card"><h3>Need Expert Help?</h3><p>Our travel experts are here to guide you 24/7</p><a href={tel}><Phone/> {phone}</a><a href={wa}><MessageCircle/> WhatsApp Us</a></div><div className="image-quote"><img src={img.water}/><p>Every story is a step closer to the divine.</p></div></aside> }
+function WhyBlog() { return <section className="wrap whyblog"><SectionTitle title="Why Read Our Blog?" /><div>{['Authentic Information','Expert Insights','Real Experiences','Helpful for Your Journey'].map(x=><span key={x}><ShieldCheck />{x}</span>)}</div></section> }
+
+function DestinationDetail({id}:{id:string}){
+  const d=destinationData.find(x=>slug(x.name)===id)||destinationData[0]
+  return <><PageHero page="Destinations" title={d.name} gold={d.region} text={d.intro} bg={d.image}/><section className="wrap detail-page"><div className="detail-gallery"><motion.img initial={{opacity:0,scale:.96}} animate={{opacity:1,scale:1}} src={d.gallery[0]}/><div>{d.gallery.slice(1).map((x,i)=><motion.img whileHover={{scale:1.04}} src={x} key={i}/>)}</div></div><div className="detail-intro"><SectionTitle over="Sacred Destination" title={`A meaningful journey to ${d.name}`}/><p>{d.intro}</p><div className="detail-facts"><span><CalendarDays/><b>Best time</b>{d.best}</span><span><Clock/><b>Suggested stay</b>{d.duration}</span><span><MapPin/><b>Location</b>{d.region}</span></div></div></section><section className="detail-band"><div className="wrap detail-columns"><div><SectionTitle title="Must-Visit Sacred Places"/><div className="place-grid">{d.places.map((p,i)=><motion.article whileHover={{y:-8,rotateX:2}} key={p}><img src={d.gallery[i%d.gallery.length]}/><span>{String(i+1).padStart(2,'0')}</span><h3>{p}</h3><p>A revered stop included in your carefully planned devotional journey.</p></motion.article>)}</div></div><div><SectionTitle title="Suggested Itinerary"/><div className="timeline">{d.itinerary.map((x,i)=><motion.div initial={{opacity:0,x:20}} whileInView={{opacity:1,x:0}} viewport={{once:false}} key={x}><b>Day {i+1}</b><p>{x}</p></motion.div>)}</div><Button href={wa}>Plan this journey</Button></div></div></section><section className="wrap section"><SectionTitle title="You may also feel drawn to"/><DestinationGrid items={destinationData.filter(x=>x.name!==d.name&&x.zone===d.zone).slice(0,5)}/></section><Cta/></>
+}
+
+function PackageDetail({id}:{id:string}){
+  const p=packages.find(x=>slug(x[0])===id)||packages[0], related=destinationData.find(d=>p[1].toLowerCase().includes(d.name.split(' ')[0].toLowerCase()))||destinationData[0]
+  return <><PageHero page="Tour Packages" title={p[0]} gold={p[2]} text={p[1]} bg={p[4]}/><section className="wrap package-detail"><div><SectionTitle over="Kakani Holidays" title="Package overview"/><p>This customizable devotional journey includes carefully coordinated stays, sightseeing and local travel assistance. Final inclusions and price are confirmed according to travel dates and group requirements.</p><div className="detail-facts"><span><Clock/><b>Duration</b>{p[2]}</span><span><Hotel/><b>Stay</b>Comfortable hotels</span><span><Bus/><b>Travel</b>Planned transfers</span></div><h2>Indicative itinerary</h2><div className="timeline">{related.itinerary.map((x,i)=><div key={x}><b>Day {i+1}</b><p>{x}</p></div>)}</div></div><aside className="booking-card"><img src={p[4]}/><h3>{p[0]}</h3><p>Starting from</p><strong>₹{p[3]} /-</strong><a className="btn" href={wa}>Enquire on WhatsApp <MessageCircle/></a><a className="btn outline" href={tel}>Call {phone}</a></aside></section></>
+}
+
+function PackageExperience({id}:{id:string}){
+  const p=packages.find(x=>slug(x[0])===id)||packages[0]
+  const related=destinationData.find(d=>p[1].toLowerCase().includes(d.name.split(' ')[0].toLowerCase()))||destinationData[0]
+  const [tab,setTab]=useState('Itinerary')
+  const tabs=['Itinerary','Date & Price Info','Inclusions / Exclusions','Tour Info','Places Covered','Similar Packages','Tour Gallery']
+  const included=['Selected hotel accommodation','Daily breakfast','Sightseeing and transfers','Driver allowance, tolls and parking','Kakani Holidays travel assistance']
+  const excluded=['Air or rail fare unless specified','Special darshan and puja tickets','Personal expenses and meals not listed','Travel insurance and medical expenses']
+  return <><PageHero page="Tour Packages" title={p[0]} gold={p[2]} text={p[1]} bg={p[4]}/><section className="package-summary"><div className="wrap"><div><p>Kakani Holidays devotional collection</p><h2>{p[0]}</h2><span>{p[1]}</span></div><div className="summary-facts"><span><Clock/><b>{p[2]}</b>Duration</span><span><Hotel/><b>Selected stays</b>Accommodation</span><span><Bus/><b>Planned travel</b>Transport</span></div><a className="price-panel" href={wa}><small>Starting from</small><strong>₹{p[3]}</strong><b>Request exact quote</b></a></div></section><div className="package-tabs"><div className="wrap">{tabs.map(x=><button className={tab===x?'active':''} onClick={()=>setTab(x)} key={x}>{x}</button>)}</div></div><section className="wrap tab-content"><AnimatePresence mode="wait"><motion.div key={tab} initial={{opacity:0,y:18}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}}>{tab==='Itinerary'&&<><SectionTitle over="Day-by-day journey" title="Your devotional itinerary"/><div className="rich-itinerary">{related.itinerary.map((x,i)=><article key={x}><span>Day {String(i+1).padStart(2,'0')}</span><img src={related.gallery[i%related.gallery.length]}/><div><h3>{x}</h3><p>Assisted travel, hotel coordination and time for darshan or sightseeing are planned at a comfortable pace.</p><small><Hotel/> Stay <Bus/> Transfer <Landmark/> Darshan</small></div></article>)}</div></>}{tab==='Date & Price Info'&&<><SectionTitle title="Dates and price information"/><div className="price-table"><div><b>Travel season</b><b>Package type</b><b>Price</b><b>Action</b></div>{['August - September','October - December','January - March'].map(x=><div key={x}><span>{x}</span><span>Customized departure</span><strong>From ₹{p[3]}</strong><a href={wa}>Check availability</a></div>)}</div><p className="note">Final prices depend on departure city, hotel category, occupancy, group size and travel date.</p></>}{tab==='Inclusions / Exclusions'&&<div className="include-grid"><div><h2>Inclusions</h2>{included.map(x=><p key={x}><CheckCircle2/>{x}</p>)}</div><div><h2>Exclusions</h2>{excluded.map(x=><p key={x}><X/>{x}</p>)}</div></div>}{tab==='Tour Info'&&<><SectionTitle title="Important tour information"/><div className="info-cards">{[['Booking','Confirmation follows advance payment and written approval.'],['Darshan','Temple timings are governed by local authorities.'],['Hotels','Standard check-in and check-out policies apply.'],['Transport','Vehicle type depends on group size and road conditions.'],['Health','Share mobility or medical requirements before booking.'],['Documents','Carry government photo ID and required registrations.']].map(([a,b],i)=><article key={a}><span>0{i+1}</span><h3>{a}</h3><p>{b}</p></article>)}</div></>}{tab==='Places Covered'&&<><SectionTitle title="Sacred places covered"/><div className="place-grid">{related.places.map((x,i)=><article key={x}><img src={related.gallery[i%related.gallery.length]}/><span>{String(i+1).padStart(2,'0')}</span><h3>{x}</h3><p>{related.region}</p></article>)}</div></>}{tab==='Similar Packages'&&<><SectionTitle title="Similar devotional packages"/><div className="package-grid">{packages.filter(x=>x[0]!==p[0]).slice(0,4).map(x=><PackageCard key={x[0]} p={x}/>)}</div></>}{tab==='Tour Gallery'&&<><SectionTitle title="Journey gallery"/><div className="tour-gallery">{[...related.gallery,p[4],img.water,img.temple].map((x,i)=><motion.img whileHover={{scale:1.035}} src={x} key={i}/>)}</div></>}</motion.div></AnimatePresence></section><section className="wrap package-enquiry"><div><p>Need another departure city or travel pace?</p><h2>Customize this pilgrimage with Kakani Holidays</h2></div><Button href={tel}>Call {phone}</Button><Button href={wa} outline>WhatsApp enquiry</Button></section></>
+}
+
+function App() {
+  const page = usePage()
+  const [loading, setLoading] = useState(true)
+  useEffect(() => { const t = setTimeout(() => setLoading(false), 1200); return () => clearTimeout(t) }, [])
+  const map: Record<string, React.ReactNode> = { home: <Home />, destinations: <DestinationsPage />, 'tour-packages': <PackagesPage />, 'pilgrimage-guide': <GuidePage />, blog: <BlogPage />, 'about-us': <About />, 'contact-us': <ContactPage /> }
+  const content=page.startsWith('destination/')?<DestinationDetail id={page.split('/')[1]}/>:page.startsWith('package/')?<PackageExperience id={page.split('/')[1]}/>:map[page]||<Home/>
+  return <>{loading && <Loader />}<Header page={page} /><AnimatePresence mode="wait"><motion.main key={page} initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} transition={{duration:.35}}>{content}</motion.main></AnimatePresence>{!['tour-packages','pilgrimage-guide','blog','contact-us'].includes(page) && <Footer />}<a className="whatsapp" href={wa}><MessageCircle /></a></>
+}
+
+createRoot(document.getElementById('root')!).render(<App />)
