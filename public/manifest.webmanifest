@@ -1,1 +1,8 @@
-{"name":"Kakatiya Travels","short_name":"Kakatiya","start_url":"/","display":"standalone","background_color":"#160c07","theme_color":"#160c07","icons":[{"src":"/images/golden-temple-hero.png","sizes":"512x512","type":"image/png"}]}
+{
+  "name": "Kakani Holidays Pvt. Ltd.",
+  "short_name": "Kakani Holidays",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0D1A17",
+  "theme_color": "#0D1A17"
+}
