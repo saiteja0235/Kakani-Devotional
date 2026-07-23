@@ -14,6 +14,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { GlassPanel } from '../components/ui/Glass'
 import { Button } from '../components/ui/Button'
+import { CinematicImage } from '../components/ui/CinematicImage'
 import { Reveal, SectionHead } from '../components/ui/Primitives'
 import { articles, contact, destinations, packages, testimonials } from '../data/content'
 import { imageRevealVariants, motionEase, revealVariants, staggerVariants } from '../lib/motion'
@@ -89,7 +90,7 @@ export default function HomePage() {
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
         >
-          <img loading="lazy" src="/images/hindu-temple-hero.png" alt="Temple architecture in warm evening light" />
+          <CinematicImage src="/images/hindu-temple-hero.png" alt="Temple architecture in warm evening light" parallax />
           <figcaption>Thoughtful planning. Quietly present.</figcaption>
         </motion.figure>
       </section>
