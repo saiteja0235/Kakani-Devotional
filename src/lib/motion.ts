@@ -25,6 +25,11 @@ export const staggerVariants: Variants = {
   visible: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
 }
 
+export const textRevealVariants: Variants = {
+  hidden: { opacity: 0, y: '35%' },
+  visible: { opacity: 1, y: 0, transition: { duration: motionDuration.reveal, ease: motionEase } },
+}
+
 export const imageRevealVariants: Variants = {
   hidden: { opacity: 0, scale: 1.035 },
   visible: { opacity: 1, scale: 1, transition: { duration: motionDuration.hero, ease: motionEase } },
@@ -34,4 +39,14 @@ export const pageTransition = {
   initial: { opacity: 0 },
   animate: { opacity: 1, transition: { duration: motionDuration.normal, ease: motionEase } },
   exit: { opacity: 0, transition: { duration: motionDuration.fast, ease: motionEase } },
+}
+
+export const hoverLift = {
+  rest: { y: 0 },
+  hover: { y: -5, transition: { duration: motionDuration.fast, ease: motionEase } },
+}
+
+export const layoutTransition: Transition = {
+  duration: motionDuration.normal,
+  ease: motionEase,
 }

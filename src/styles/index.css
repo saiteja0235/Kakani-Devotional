@@ -2,6 +2,7 @@
 @import "./tokens.css";
 @import "./foundation.css";
 @import "./navigation.css";
+@import "./motion.css";
 @import "./home.css";
 @import "./footer.css";
 @import "tailwindcss";

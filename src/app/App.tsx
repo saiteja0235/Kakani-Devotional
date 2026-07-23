@@ -1,5 +1,6 @@
 import { AppRouter } from './router'
+import { MotionProvider } from '../components/motion/MotionSystem'
 
 export function App() {
-  return <AppRouter />
+  return <MotionProvider><AppRouter /></MotionProvider>
 }
