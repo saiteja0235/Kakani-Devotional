@@ -253,12 +253,13 @@ function ContactLuxury(){
 
 function EditorialHead({over,title}:{over:string;title:string}){return <div className="editorial-head"><p>{over}</p><h2>{title}</h2></div>}
 function CinematicCta({image,over,title,primary}:{image:string;over:string;title:string;primary:string}){return <section className="editorial-cta"><img src={image}/><div><p>{over}</p><h2>{title}</h2><Button href={wa}>{primary}</Button></div></section>}
+function GuideQuickTools(){const [open,setOpen]=useState(false);return <aside className={`guide-quick-tools ${open?'open':''}`} aria-label="Pilgrimage guide tools"><button className="guide-tools-toggle" onClick={()=>setOpen(!open)} aria-expanded={open}><BookOpen/><span>Guide tools</span><ChevronRight/></button><div><p>Popular guides</p>{posts.slice(0,3).map(p=><a href="#guide-library" onClick={()=>setOpen(false)} key={p[0]}>{p[0]}<ArrowRight/></a>)}<button onClick={()=>window.print()}><BookOpen/>Save PDF guide</button><a className="guide-expert-link" href={wa}><MessageCircle/>Ask an expert</a></div></aside>}
 
 function App() {
   const page = usePage()
   const [loading, setLoading] = useState(true)
   useEffect(() => { const t = setTimeout(() => setLoading(false), 1200); return () => clearTimeout(t) }, [])
-  const map: Record<string, React.ReactNode> = { home: <Home />, destinations: <DestinationsPage />, 'tour-packages': <PackagesPage />, 'pilgrimage-guide': <GuidePage />, blog: <BlogLuxury />, 'about-us': <AboutLuxury />, 'contact-us': <ContactLuxury /> }
+  const map: Record<string, React.ReactNode> = { home: <Home />, destinations: <DestinationsPage />, 'tour-packages': <PackagesPage />, 'pilgrimage-guide': <><GuidePage/><GuideQuickTools/></>, blog: <BlogLuxury />, 'about-us': <AboutLuxury />, 'contact-us': <ContactLuxury /> }
   const content=page.startsWith('destination/')?<DestinationDetail id={page.split('/')[1]}/>:page.startsWith('package/')?<PackageExperience id={page.split('/')[1]}/>:map[page]||<Home/>
   return <>{loading && <Loader />}<Header page={page} /><AnimatePresence mode="wait"><motion.main key={page} initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} transition={{duration:.35}}>{content}</motion.main></AnimatePresence>{!['tour-packages','pilgrimage-guide','blog','contact-us'].includes(page) && <Footer />}<a className="whatsapp" href={wa}><MessageCircle /></a></>
 }
